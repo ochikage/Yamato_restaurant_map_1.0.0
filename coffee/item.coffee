@@ -8,18 +8,27 @@ class Item
     #@item.title += "(" + @item.reclip_count + ")";
     if @item.places[0]?
        @item.title += " @ " + @item.places[0].name
-
+    
+    #calc distance
+    to_lat = 0;
+    to_lon = 0;
+    if @item.places[0].lat? then to_lat = @item.places[0].lat
+    if @item.places[0].lon? then to_lon = @item.places[0].lon
+    to = new google.maps.LatLng(to_lat, to_lon)
+    from = new google.maps.LatLng(INIT_LATITUDE, INIT_LONGTITUDE)
+    @distance = google.maps.geometry.spherical.computeDistanceBetween(from, to)
 
   renderContext: ->
     updated_at = new Date(@item.updated_at)
     now = new Date()
     passedDate = (now - updated_at) / (1000 * 60 * 60 * 24)
 
+    #sometimes those values are returned as null
     item_img_s = ""
     item_img_m = ""
     if @item.image_urls[0]? then item_img_s = @item.image_urls[0].crop_S
     if @item.image_urls[0]? then item_img_m = @item.image_urls[0].crop_M
-
+    
     {
       id: @item.id
       short_title: truncate(@item.title, 20)
@@ -33,6 +42,7 @@ class Item
       stream_url: "https://tab.do/streams/#{@item.stream.id}"
       stream_title: @item.stream.title
       is_new: passedDate < 1
+      distance: Math.round(@distance)
     }
 
   html: ->

@@ -6,15 +6,19 @@
     resizeContentHeight();
     $(window).bind("resize", resizeContentHeight);
     $('#item-pickup-target').bind('change', function() {
-      search_item($('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val());
+      search_item($('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val());
       return false;
     });
     $('#item-pickup-category').bind('change', function() {
-      search_item($('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val());
+      search_item($('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val());
+      return false;
+    });
+    $('#item-pickup-distance').bind('change', function() {
+      search_item($('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val());
       return false;
     });
     $('#item-pickup-form').bind('submit', function() {
-      search_item($('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val());
+      search_item($('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val());
       return false;
     });
     $('#mmc-location-button').bind('click', function() {
@@ -71,8 +75,8 @@
     return $.get(url, {}, cb);
   };
 
-  search_item = function(target, category, word) {
-    Map.get().update(target, category, word);
+  search_item = function(target, category, word, distance) {
+    Map.get().update(target, category, word, distance);
     return true;
   };
 
@@ -258,8 +262,8 @@
       return read_nearby_popular_with_current_map_range();
     };
 
-    Map.prototype.update = function(target, category, word) {
-      var bDescription, bTitle, item, item_instance, result_div, _i, _len, _ref,
+    Map.prototype.update = function(target, category, word, distance) {
+      var bDescription, bDistance, bTitle, item, item_instance, result_div, _i, _len, _ref,
         _this = this;
       if (target == null) {
         target = ".*";
@@ -270,7 +274,9 @@
       if (word == null) {
         word = ".*";
       }
-      console.log("update");
+      if (distance == null) {
+        distance = 400000000;
+      }
       result_div = $('#search-result');
       result_div.empty();
       this.clearMarkers();
@@ -285,7 +291,8 @@
         item_instance = new Item(item);
         bTitle = item.title.match(new RegExp(target)) && item.title.match(new RegExp(category)) && item.title.match(new RegExp(word));
         bDescription = item.description.match(new RegExp(target)) && item.description.match(new RegExp(category)) && item.description.match(new RegExp(word));
-        if (!(bTitle || bDescription)) {
+        bDistance = item_instance.distance < distance ? true : false;
+        if (!((bTitle || bDescription) && bDistance)) {
           continue;
         }
         result_div.append(item_instance.html());
@@ -318,10 +325,22 @@
     var truncate;
 
     function Item(item) {
+      var from, to, to_lat, to_lon;
       this.item = item;
       if (this.item.places[0] != null) {
         this.item.title += " @ " + this.item.places[0].name;
       }
+      to_lat = 0;
+      to_lon = 0;
+      if (this.item.places[0].lat != null) {
+        to_lat = this.item.places[0].lat;
+      }
+      if (this.item.places[0].lon != null) {
+        to_lon = this.item.places[0].lon;
+      }
+      to = new google.maps.LatLng(to_lat, to_lon);
+      from = new google.maps.LatLng(INIT_LATITUDE, INIT_LONGTITUDE);
+      this.distance = google.maps.geometry.spherical.computeDistanceBetween(from, to);
     }
 
     Item.prototype.renderContext = function() {
@@ -349,7 +368,8 @@
         tab_url: "https://tab.do/items/" + this.item.id,
         stream_url: "https://tab.do/streams/" + this.item.stream.id,
         stream_title: this.item.stream.title,
-        is_new: passedDate < 1
+        is_new: passedDate < 1,
+        distance: Math.round(this.distance)
       };
     };
 

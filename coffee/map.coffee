@@ -126,8 +126,7 @@ class Map
     read_nearby_popular_with_current_map_range()
 
 
-  update: (target = ".*", category = ".*", word = ".*") ->
-    console.log("update")
+  update: (target = ".*", category = ".*", word = ".*", distance = 400000000) ->
     result_div = $('#search-result')
     result_div.empty()
 
@@ -142,8 +141,9 @@ class Map
 
       #Search
       bTitle = item.title.match(new RegExp(target)) && item.title.match(new RegExp(category)) && item.title.match(new RegExp(word))
-      bDescription = item.description.match(new RegExp(target)) && item.description.match(new RegExp(category)) && item.description.match(new RegExp(word)) 
-      if !(bTitle || bDescription) then continue 
+      bDescription = item.description.match(new RegExp(target)) && item.description.match(new RegExp(category)) && item.description.match(new RegExp(word))
+      bDistance = if item_instance.distance < distance then true else false
+      if !((bTitle || bDescription) && bDistance) then continue 
 			
       result_div.append(item_instance.html())
       @createGroupedMarkers(item_instance)

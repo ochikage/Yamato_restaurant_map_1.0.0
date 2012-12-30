@@ -27,13 +27,16 @@ $(document).ready ->
   
   #Item Search
   $('#item-pickup-target').bind 'change', ->
-    search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val() 
+    search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
     false 
   $('#item-pickup-category').bind 'change', ->
-    search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val() 
+    search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
     false 
+  $('#item-pickup-distance').bind 'change', ->
+    search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
+    false
   $('#item-pickup-form').bind 'submit', ->
-    search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val() #007C
+    search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
     false
 
   #Map Search
@@ -75,7 +78,7 @@ read_user_follow_items = (cb) ->
   url = api_url("users/" + USER_ID + "/items")
   $.get(url, {	}, cb)
 
-search_item = (target, category, word) ->
-  Map.get().update(target, category, word)
+search_item = (target, category, word, distance) ->
+  Map.get().update(target, category, word, distance)
   true
 
