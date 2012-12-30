@@ -27,16 +27,38 @@ $(document).ready ->
   
   #Item Search
   $('#item-pickup-target').bind 'change', ->
-    search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
+    #search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
+    switch $('#item-pickup-target').val()
+      when "lunch"
+        categories = TARGET_LUNCH
+      when "dinner"
+        categories = TARGET_DINNER
+      when "cafe"
+        categories = TARGET_CAFE
+      when "party"
+        categories = TARGET_PARTY
+      when "entertainment"
+        categories = TARGET_ENTERTAINMENT
+      else
+        categories = TARGET_TARGET
+    $("#item-pickup-category").children().remove() 
+    for category in categories
+      #$("#item-pickup-category").html(CAT_NAME[category]).attr({value : CAT_WORD[category]}
+      elm = $("<option>").html(CAT_NAME[category]).attr({value : CAT_WORD[category]})
+      $("#item-pickup-category").append(elm)
+    search_item ".*", $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
     false 
   $('#item-pickup-category').bind 'change', ->
-    search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
+    #search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
+    search_item ".*", $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
     false 
   $('#item-pickup-distance').bind 'change', ->
-    search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
+    #search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
+    search_item ".*", $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
     false
   $('#item-pickup-form').bind 'submit', ->
-    search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
+    #search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
+    search_item ".*", $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
     false
 
   #Map Search
