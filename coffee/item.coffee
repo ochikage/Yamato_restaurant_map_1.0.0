@@ -3,12 +3,7 @@
 ###############################################################################
 
 class Item
-  constructor: (@item) ->
-    #Reclip count
-    #@item.title += "(" + @item.reclip_count + ")";
-    if @item.places[0]?
-       @item.title += " @ " + @item.places[0].name
-    
+  constructor: (@item) ->   
     #calc distance
     to_lat = 0;
     to_lon = 0;
@@ -23,6 +18,14 @@ class Item
     now = new Date()
     passedDate = (now - updated_at) / (1000 * 60 * 60 * 24)
 
+    #Modify title
+    mod_title = @item.title
+    #Reclip count
+    #mod_title += "(" + @item.reclip_count + ")";
+    #Add place name
+    if @item.places[0]?
+       mod_title += " @ " + @item.places[0].name
+    
     #sometimes those values are returned as null
     item_img_s = ""
     item_img_m = ""
@@ -32,7 +35,7 @@ class Item
     {
       id: @item.id
       short_title: truncate(@item.title, 20)
-      title: @item.title
+      title: mod_title
       short_description: truncate(@item.description, 50)
       long_description: truncate(@item.description, 300)
       image_url_small: item_img_s

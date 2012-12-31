@@ -275,11 +275,8 @@
         var bounds, dist;
         bounds = _this.gmap.getBounds();
         if (bounds != null) {
-          console.log(bounds.toString());
           dist = google.maps.geometry.spherical.computeDistanceBetween(bounds.getNorthEast(), bounds.getSouthWest());
           return read_user_follow_items(function(data) {
-            console.log("data loaded");
-            console.log(data);
             _this.loaded_data = data;
             return _this.update();
           });
@@ -303,7 +300,7 @@
         word = ".*";
       }
       if (distance == null) {
-        distance = 400000000;
+        distance = Infinity;
       }
       result_div = $('#search-result');
       result_div.empty();
@@ -355,9 +352,6 @@
     function Item(item) {
       var from, to, to_lat, to_lon;
       this.item = item;
-      if (this.item.places[0] != null) {
-        this.item.title += " @ " + this.item.places[0].name;
-      }
       to_lat = 0;
       to_lon = 0;
       if (this.item.places[0].lat != null) {
@@ -372,10 +366,14 @@
     }
 
     Item.prototype.renderContext = function() {
-      var item_img_m, item_img_s, now, passedDate, updated_at;
+      var item_img_m, item_img_s, mod_title, now, passedDate, updated_at;
       updated_at = new Date(this.item.updated_at);
       now = new Date();
       passedDate = (now - updated_at) / (1000 * 60 * 60 * 24);
+      mod_title = this.item.title;
+      if (this.item.places[0] != null) {
+        mod_title += " @ " + this.item.places[0].name;
+      }
       item_img_s = "";
       item_img_m = "";
       if (this.item.image_urls[0] != null) {
@@ -387,7 +385,7 @@
       return {
         id: this.item.id,
         short_title: truncate(this.item.title, 20),
-        title: this.item.title,
+        title: mod_title,
         short_description: truncate(this.item.description, 50),
         long_description: truncate(this.item.description, 300),
         image_url_small: item_img_s,

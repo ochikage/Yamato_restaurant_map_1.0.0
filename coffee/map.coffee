@@ -113,12 +113,9 @@ class Map
     read_nearby_popular_with_current_map_range = =>
       bounds = @gmap.getBounds()
       if bounds?
-        console.log bounds.toString()
         dist = google.maps.geometry.spherical.computeDistanceBetween(bounds.getNorthEast(), bounds.getSouthWest())
         
-        read_user_follow_items (data) =>
-          console.log("data loaded")
-          console.log(data)  
+        read_user_follow_items (data) => 
           @loaded_data = data;
           @update();
       else
@@ -126,7 +123,7 @@ class Map
     read_nearby_popular_with_current_map_range()
 
 
-  update: (target = ".*", category = ".*", word = ".*", distance = 400000000) ->
+  update: (target = ".*", category = ".*", word = ".*", distance = Infinity) ->
     result_div = $('#search-result')
     result_div.empty()
 
