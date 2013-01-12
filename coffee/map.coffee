@@ -13,7 +13,7 @@ class Map
       _instance = new Map(latlng)
     _instance
 
-  constructor: (latlng, zoom=SEARCH_ZOOM_LEVEL) ->
+  constructor: (latlng, zoom=DEFAULT_ZOOM_LEVEL) ->
     #initialize
     @markers = []
     @openGroupedInfoWindowFn = {}
@@ -26,7 +26,8 @@ class Map
       zoom: zoom
       center: latlng
       mapTypeId: google.maps.MapTypeId.ROADMAP
-      scrollwheel: false
+      scrollwheel: true
+      scaleControl: true
     }
     
     @gmap = new google.maps.Map(document.getElementById('map_canvas'), myOptions)
@@ -123,7 +124,7 @@ class Map
     read_nearby_popular_with_current_map_range()
 
 
-  update: (target = ".*", category = ".*", word = ".*", distance = Infinity) ->
+  update: (category = ".*", word = ".*", distance = Infinity) ->
     result_div = $('#search-result')
     result_div.empty()
 
@@ -137,11 +138,13 @@ class Map
       item_instance = new Item item
 
       #Search
-      bTitle = item.title.match(new RegExp(target)) && item.title.match(new RegExp(category)) && item.title.match(new RegExp(word))
-      bDescription = item.description.match(new RegExp(target)) && item.description.match(new RegExp(category)) && item.description.match(new RegExp(word))
+      bTitle = item.title.match(new RegExp(category)) && item.title.match(new RegExp(word))
+      bDescription = item.description.match(new RegExp(category)) && item.description.match(new RegExp(word))
       bDistance = if item_instance.distance < distance then true else false
       if !((bTitle || bDescription) && bDistance) then continue 
 			
+      @gmap.setZoom(ZOOM_LEVEL[distance])
+      
       result_div.append(item_instance.html())
       @createGroupedMarkers(item_instance)
       @showGroupedMarkers() 

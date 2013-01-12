@@ -25,40 +25,24 @@ $(document).ready ->
   resizeContentHeight()
   $(window).bind("resize", resizeContentHeight)
   
+  #Create select item
+  for key, category of CATEGORY
+    elm = $("<option>").html(key).attr({value : category})
+    $("#item-pickup-category").append(elm)
+  
+  for key, distance of DISTANCE
+    elm = $("<option>").html(key).attr({value : distance})
+    $("#item-pickup-distance").append(elm)
+  
   #Item Search
-  $('#item-pickup-target').bind 'change', ->
-    #search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
-    switch $('#item-pickup-target').val()
-      when "lunch"
-        categories = TARGET_LUNCH
-      when "dinner"
-        categories = TARGET_DINNER
-      when "cafe"
-        categories = TARGET_CAFE
-      when "party"
-        categories = TARGET_PARTY
-      when "entertainment"
-        categories = TARGET_ENTERTAINMENT
-      else
-        categories = TARGET_TARGET
-    $("#item-pickup-category").children().remove() 
-    for category in categories
-      #$("#item-pickup-category").html(CAT_NAME[category]).attr({value : CAT_WORD[category]}
-      elm = $("<option>").html(CAT_NAME[category]).attr({value : CAT_WORD[category]})
-      $("#item-pickup-category").append(elm)
-    search_item ".*", $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
-    false 
   $('#item-pickup-category').bind 'change', ->
-    #search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
-    search_item ".*", $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
+    search_item $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
     false 
   $('#item-pickup-distance').bind 'change', ->
-    #search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
-    search_item ".*", $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
+    search_item $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
     false
   $('#item-pickup-form').bind 'submit', ->
-    #search_item $('#item-pickup-target').val(), $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
-    search_item ".*", $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
+    search_item $('#item-pickup-category').val(), $('#item-pickup-input').val(), $('#item-pickup-distance').val()
     false
 
   #Map Search
@@ -87,7 +71,7 @@ load_address = (address) ->
     if status == google.maps.GeocoderStatus.OK
       latlng = results[0].geometry.location
       m = Map.get(latlng)
-      m.gmap.setZoom(SEARCH_ZOOM_LEVEL)
+      m.gmap.setZoom(DEFAULT_ZOOM_LEVEL)
       m.load()
     else
       alert("Geocode failed: #{status}")
@@ -100,7 +84,7 @@ read_user_follow_items = (cb) ->
   url = api_url("users/" + USER_ID + "/items")
   $.get(url, {	}, cb)
 
-search_item = (target, category, word, distance) ->
-  Map.get().update(target, category, word, distance)
+search_item = (category, word, distance) ->
+  Map.get().update(category, word, distance)
   true
 
